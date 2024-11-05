@@ -18,7 +18,9 @@
 //
 // Created by ziqi on 2024/8/7.
 //
-
+#include <stddef.h>
+#include <stdio.h>
+#include <string.h>
 #include "net_controller.h"
 
 #include <sys/socket.h>

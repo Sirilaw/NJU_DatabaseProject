@@ -81,7 +81,7 @@ public:
 
 private:
   /// Mutex
-  std::mutex latch_;
+  std::mutex latch_;  
   /// LRU list to store the frame id and the evictable status
   std::list<std::pair<frame_id_t, bool>> lru_list_;
   /// Hash map to store the frame id and the iterator in the LRU list
