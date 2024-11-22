@@ -277,7 +277,7 @@ TEST(BufferPoolManagerTest, MultiThread)
           ASSERT_NE(page->GetData(), nullptr);
           memcpy(page->GetData(), page_data[j].c_str(), page_data[j].size());
           buffer_pool_manager.UnpinPage(fd, j, true);
-          progress.Step();
+          progress.Step();  
           progress.Show();
         }
       });

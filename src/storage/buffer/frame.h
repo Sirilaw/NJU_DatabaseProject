@@ -27,6 +27,9 @@
 #include "common/page.h"
 class Frame
 {
+
+friend class BufferPoolManager;
+
 public:
   Frame()  = default;
   ~Frame() = default;

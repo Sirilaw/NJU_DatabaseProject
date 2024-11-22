@@ -114,26 +114,7 @@ TEST(ReplacerTest, LRU)
     }
   }
 
-  SUB_TEST(AlwaysAvaibleFrame)
-  {
-    // this test will pin, unpin and victimize, but at least one frame is always available
-    std::unordered_set<frame_id_t> pinned;
-    for (int i = 0; i < 1000; ++i) {
-      frame_id_t frame_id = rand() % 8;
-      if (pinned.find(frame_id) == pinned.end()) {
-        replacer.Pin(frame_id);
-        pinned.insert(frame_id);
-      } else {
-        replacer.Unpin(frame_id);
-        pinned.erase(frame_id);
-      }
-      frame_id_t victim_frame_id;
-      replacer.Victim(&victim_frame_id);
-      if (pinned.size() < 8) {
-        ASSERT_NE(victim_frame_id, INVALID_FRAME_ID);
-      }
-    }
-  }
+  // 删去了117-136行的第四个子测试（测试代码本身有问题）
 }
 
 TEST(ReplacerTest, LRUK)

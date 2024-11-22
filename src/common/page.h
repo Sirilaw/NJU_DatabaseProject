@@ -36,6 +36,7 @@
 
 class Page
 {
+friend class BufferPoolManager;
 
 public:
   Page() = default;
