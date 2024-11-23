@@ -28,30 +28,30 @@ namespace wsdb {
 
 class RID
 {
-public:
-  RID() : page_id_(INVALID_PAGE_ID), slot_id_(INVALID_SLOT_ID) {}
-  RID(page_id_t page_id, slot_id_t slot_id) : page_id_(page_id), slot_id_(slot_id) {}
-  RID(const RID &other)     = default;
-  RID(RID &&other) noexcept = default;
-  ~RID()                    = default;
+  public:
+    RID() : page_id_(INVALID_PAGE_ID), slot_id_(INVALID_SLOT_ID) {}
+    RID(page_id_t page_id, slot_id_t slot_id) : page_id_(page_id), slot_id_(slot_id) {}
+    RID(const RID &other)     = default;
+    RID(RID &&other) noexcept = default;
+    ~RID()                    = default;
 
-  [[nodiscard]] page_id_t PageID() const { return page_id_; }
-  [[nodiscard]] slot_id_t SlotID() const { return slot_id_; }
+    [[nodiscard]] page_id_t PageID() const { return page_id_; }
+    [[nodiscard]] slot_id_t SlotID() const { return slot_id_; }
 
-  auto operator=(const RID &other) -> RID & = default;
+    auto operator=(const RID &other) -> RID & = default;
 
-  auto operator=(RID &&other) noexcept -> RID & = default;
+    auto operator=(RID &&other) noexcept -> RID & = default;
 
-  auto operator==(const RID &other) const -> bool { return page_id_ == other.page_id_ && slot_id_ == other.slot_id_; }
+    auto operator==(const RID &other) const -> bool { return page_id_ == other.page_id_ && slot_id_ == other.slot_id_; }
 
-  auto operator!=(const RID &other) const -> bool { return !(*this == other); }
+    auto operator!=(const RID &other) const -> bool { return !(*this == other); }
 
-  // Hash code for this RID
-  [[nodiscard]] auto GetHash() const -> size_t { return page_id_ << 16 | slot_id_; }
+    // Hash code for this RID
+    [[nodiscard]] auto GetHash() const -> size_t { return page_id_ << 16 | slot_id_; }
 
-private:
-  page_id_t page_id_;
-  slot_id_t slot_id_;
+  private:
+    page_id_t page_id_;
+    slot_id_t slot_id_;
 };
 
 const RID INVALID_RID = RID(INVALID_PAGE_ID, INVALID_SLOT_ID);
@@ -62,7 +62,7 @@ namespace std {
 template <>
 struct hash<wsdb::RID>
 {
-  auto operator()(const wsdb::RID &rid) const -> size_t { return rid.GetHash(); }
+    auto operator()(const wsdb::RID &rid) const -> size_t { return rid.GetHash(); }
 };
 }  // namespace std
 

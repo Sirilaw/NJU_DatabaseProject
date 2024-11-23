@@ -33,38 +33,40 @@ namespace wsdb {
 class BitMap
 {
 
-public:
-  BitMap()  = delete;
-  ~BitMap() = delete;
-  DISABLE_COPY_MOVE_AND_ASSIGN(BitMap);
+  public:
+    BitMap()  = delete;
+    ~BitMap() = delete;
+    DISABLE_COPY_MOVE_AND_ASSIGN(BitMap);
 
-  static void SetBit(char *bitmap, size_t bit_idx, bool value)
-  {
-    if (value) {
-      bitmap[bit_idx / BITMAP_WIDTH] |= (1 << (bit_idx % BITMAP_WIDTH));
-    } else {
-      bitmap[bit_idx / BITMAP_WIDTH] &= ~(1 << (bit_idx % BITMAP_WIDTH));
+    // 由于所有的函数都是静态的，可以直接根据类名来调用这些函数
+
+    static void SetBit(char *bitmap, size_t bit_idx, bool value)
+    {
+        if (value) {
+            bitmap[bit_idx / BITMAP_WIDTH] |= (1 << (bit_idx % BITMAP_WIDTH));
+        } else {
+            bitmap[bit_idx / BITMAP_WIDTH] &= ~(1 << (bit_idx % BITMAP_WIDTH));
+        }
     }
-  }
 
-  static auto GetBit(const char *bitmap, size_t bit_idx) -> bool
-  {
-    return (bitmap[bit_idx / BITMAP_WIDTH] & (1 << (bit_idx % BITMAP_WIDTH))) != 0;
-  }
-
-  static void Clear(char *bitmap, size_t bit_num) { memset(bitmap, 0, BITMAP_SIZE(bit_num)); }
-
-  static void Set(char *bitmap, size_t bit_num) { memset(bitmap, 0xff, BITMAP_SIZE(bit_num)); }
-
-  static auto FindFirst(const char *bitmap, size_t bit_num, size_t start, bool value) -> size_t
-  {
-    for (size_t i = start; i < bit_num; i++) {
-      if (GetBit(bitmap, i) == value) {
-        return i;
-      }
+    static auto GetBit(const char *bitmap, size_t bit_idx) -> bool
+    {
+        return (bitmap[bit_idx / BITMAP_WIDTH] & (1 << (bit_idx % BITMAP_WIDTH))) != 0;
     }
-    return bit_num;
-  }
+
+    static void Clear(char *bitmap, size_t bit_num) { memset(bitmap, 0, BITMAP_SIZE(bit_num)); }
+
+    static void Set(char *bitmap, size_t bit_num) { memset(bitmap, 0xff, BITMAP_SIZE(bit_num)); }
+
+    static auto FindFirst(const char *bitmap, size_t bit_num, size_t start, bool value) -> size_t
+    {
+        for (size_t i = start; i < bit_num; i++) {
+            if (GetBit(bitmap, i) == value) {
+                return i;
+            }
+        }
+        return bit_num;
+    }
 };
 }  // namespace wsdb
 
