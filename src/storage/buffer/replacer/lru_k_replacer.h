@@ -27,7 +27,7 @@
 #include "replacer.h"
 #include "../common/error.h"
 
-namespace wsdb {
+  namespace wsdb {
 
 class LRUKReplacer : public Replacer
 {
@@ -70,12 +70,12 @@ class LRUKReplacer : public Replacer
             unsigned long long index = 1;
             for (auto it = history_.begin(); it != history_.end(); it++) {
                 if (index == k) {
-                    timestamp_t        backward_k = *it;
-                    unsigned long long res        = cur_ts - backward_k;
-                    return res;
+                    timestamp_t backward_k = *it;
+                    return backward_k;
                 }
                 index++;
             }
+            return 0; // return unsigned long long 能表示的最小值
         }
 
         [[nodiscard]] auto IsEvictable() const -> bool
@@ -98,12 +98,17 @@ class LRUKReplacer : public Replacer
     };
 
   private:
-    std::unordered_map<frame_id_t, LRUKNode> node_store_;  // frame_id -> LRUKNode
-    size_t                                   cur_ts_{0};
-    size_t                                   cur_size_{0};  // number of evictable frames
-    size_t                                   max_size_;     // maximum number of frames that can be stored
-    size_t                                   k_;            // k for LRU-k
-    std::mutex                               latch_;        // mutex for curr_size_, node_store_, and curr_timestamp_
+    using frame_distance = std::pair<frame_id_t, unsigned long long>;
+    std::unordered_map<frame_id_t, LRUKNode>  node_store_;  // frame_id -> LRUKNode
+    std::list<frame_distance> lru_list_;    // self-defined lru_list
+    size_t  cur_ts_{0};
+    size_t  cur_size_{0};  // number of evictable frames
+    size_t  max_size_;     // maximum number of frames that can be stored
+    size_t  k_;            // k for LRU-k
+    std::mutex latch_;  // mutex for curr_size_, node_store_, and curr_timestamp_
+
+    static auto CmpDistance(const frame_distance& fd1, const frame_distance& fd2) -> bool;
+
 };
 }  // namespace wsdb
 

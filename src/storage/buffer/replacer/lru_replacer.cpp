@@ -26,15 +26,16 @@ using namespace std;
 
 namespace wsdb {
 
-LRUReplacer::LRUReplacer() : cur_size_(0), max_size_(BUFFER_POOL_SIZE) {} //构造函数 不用管
+LRUReplacer::LRUReplacer() : cur_size_(0), max_size_(BUFFER_POOL_SIZE) {}  // 构造函数 不用管
 
-auto LRUReplacer::Victim(frame_id_t *frame_id) -> bool { 
-    std::lock_guard<std::mutex> lock(latch_); // grant the latch
+auto LRUReplacer::Victim(frame_id_t *frame_id) -> bool
+{
+    std::lock_guard<std::mutex> lock(latch_);  // grant the latch
     // if lru_list has no frame
     // 一定要注意这里能不能写lru_list.empty()！
     // 因为后面会发现cur_size并不是和lru_list的增删元素同步变化的……
     // byd t1, t2因为这个卡了n天……
-    if (cur_size_ == 0)  
+    if (cur_size_ == 0)
         return false;
     lru_list_.reverse();
     for (auto it = lru_list_.begin(); it != lru_list_.end(); it++) {
@@ -51,7 +52,8 @@ auto LRUReplacer::Victim(frame_id_t *frame_id) -> bool {
     return true;
 }
 
-void LRUReplacer::Pin(frame_id_t frame_id) {
+void LRUReplacer::Pin(frame_id_t frame_id)
+{
     /* Pin的逻辑：
     1.在hash中找frame_id项，找不到直接返回
     2.Pin视为访问，则需要把frame_id对应的list中的项先清除（如已经有），然后插入list末尾
@@ -59,7 +61,7 @@ void LRUReplacer::Pin(frame_id_t frame_id) {
     4.处理cur_size（如果cur_size当前为0，则说明是从空开始pin的，则不变; 如果cur_size > 0，则说明是unpin过后才开始pin的
     又因为hash有对应项的时候才会实际“pin”，所以在list中必定有对应项，则cur_size--即可）
     */
-    std::lock_guard<std::mutex> lock(latch_); // grant the latch
+    std::lock_guard<std::mutex> lock(latch_);  // grant the latch
     if (lru_hash_.find(frame_id) != lru_hash_.end()) {
         auto it = lru_hash_[frame_id];
         if (it->second == true) {
@@ -67,13 +69,11 @@ void LRUReplacer::Pin(frame_id_t frame_id) {
             cur_size_--;
         }
         lru_list_.splice(lru_list_.begin(), lru_list_, it);
-    }
-    else {
+    } else {
         if (lru_list_.size() < max_size_) {
             lru_list_.emplace_front(frame_id, false);
             lru_hash_[frame_id] = lru_list_.begin();
-        }
-        else {
+        } else {
             frame_id_t v;
             if (Victim(&v)) {
                 lru_list_.emplace_front(frame_id, false);
@@ -83,7 +83,8 @@ void LRUReplacer::Pin(frame_id_t frame_id) {
     }
 }
 
-void LRUReplacer::Unpin(frame_id_t frame_id) { 
+void LRUReplacer::Unpin(frame_id_t frame_id)
+{
     /* Unpin的逻辑：
     1. 看lru_list中有无frame_id对应的项
         (1)有 若second=false,则改为true,cur_size++, return; 若second=true, return
@@ -91,7 +92,7 @@ void LRUReplacer::Unpin(frame_id_t frame_id) {
     2. 先插入到lru_list的尾部；然后建立对应的hash项
     3. cur_size++
     */
-    std::lock_guard<std::mutex> lock(latch_); // grant the latch
+    std::lock_guard<std::mutex> lock(latch_);  // grant the latch
     // for (auto i = lru_list_.begin(); i != lru_list_.end(); i++) {
     //     if (i->first == frame_id) {
     //         if (i->second == false) {
@@ -106,7 +107,8 @@ void LRUReplacer::Unpin(frame_id_t frame_id) {
     // lru_hash_[frame_id] = frame_it;
     // cur_size_++;
 
-    if (lru_hash_.find(frame_id) == lru_hash_.end()) return;
+    if (lru_hash_.find(frame_id) == lru_hash_.end())
+        return;
     auto it = lru_hash_[frame_id];
     if (it->second == false) {
         it->second = true;
@@ -114,8 +116,9 @@ void LRUReplacer::Unpin(frame_id_t frame_id) {
     }
 }
 
-auto LRUReplacer::Size() -> size_t { 
-    // WSDB_STUDENT_TODO(l1, t1); 
+auto LRUReplacer::Size() -> size_t
+{
+    // WSDB_STUDENT_TODO(l1, t1);
     // size_t res = 0;
     // for (auto it = lru_list_.begin(); it != lru_list_.end(); it++) {
     //     if (it->second) {
