@@ -105,7 +105,6 @@ void LRUKReplacer::Unpin(frame_id_t frame_id) {
 }
 
 auto LRUKReplacer::Size() -> size_t { 
-    // WSDB_STUDENT_TODO(l1, f1); 
     return cur_size_;    
 }
 
