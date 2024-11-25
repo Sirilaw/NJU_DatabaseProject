@@ -59,7 +59,11 @@ auto TableHandle::GetRecord(const RID &rid) -> RecordUptr
     }
 }
 
-auto TableHandle::GetChunk(page_id_t pid, const RecordSchema *chunk_schema) -> ChunkUptr { WSDB_STUDENT_TODO(l1, f2); }
+auto TableHandle::GetChunk(page_id_t pid, const RecordSchema *chunk_schema) -> ChunkUptr { 
+    // WSDB_STUDENT_TODO(l1, f2); 
+    
+}
+
 
 auto TableHandle::InsertRecord(const Record &record) -> RID
 {

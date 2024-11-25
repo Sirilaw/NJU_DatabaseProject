@@ -48,7 +48,6 @@ auto LRUReplacer::Victim(frame_id_t *frame_id) -> bool
         }
     }
     lru_list_.reverse();
-
     return true;
 }
 
