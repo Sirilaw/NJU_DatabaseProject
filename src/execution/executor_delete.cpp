@@ -37,7 +37,14 @@ void DeleteExecutor::Next()
   // number of deleted records
   int count = 0;
 
-  WSDB_STUDENT_TODO(l2, t1);
+  // WSDB_STUDENT_TODO(l2, t1);
+  for (child_->Init(); !child_->IsEnd(); child_->Next()) {
+    tbl_->DeleteRecord(child_->GetRecord()->GetRID());
+    for (auto &index: indexes_) {
+      index->DeleteRecord(*(child_->GetRecord()));
+    }
+    count++;
+  }
 
   std::vector<ValueSptr> values{ValueFactory::CreateIntValue(count)};
   record_ = std::make_unique<Record>(out_schema_.get(), values, INVALID_RID);

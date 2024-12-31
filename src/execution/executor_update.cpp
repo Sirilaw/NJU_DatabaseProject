@@ -45,7 +45,38 @@ void UpdateExecutor::Next()
   // number of updated records
   int count = 0;
 
-  WSDB_STUDENT_TODO(l2, t1);
+  // WSDB_STUDENT_TODO(l2, t1);
+  for (child_->Init(); !child_->IsEnd(); child_->Next()) {
+    auto old_record = child_->GetRecord();
+    const RecordSchema* schema = old_record->GetSchema();
+    std::vector<ValueSptr> new_values;
+    for (size_t i = 0; i < schema->GetFieldCount(); i++) {
+        auto field = schema->GetFieldAt(i);
+        bool updated = false;
+
+        for (const auto& update: updates_) {
+            if (update.first.field_.field_name_ == field.field_.field_name_) {
+                new_values.push_back(update.second);
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            new_values.push_back(old_record->GetValueAt(i));
+        }
+    }
+
+    auto new_record = std::make_unique<Record>(schema, new_values, old_record->GetRID());
+
+    tbl_->UpdateRecord(old_record->GetRID(), *new_record);
+
+    for (auto *index:indexes_) {
+        index->UpdateRecord(*old_record, *new_record);
+    }
+
+    count++;
+  }
 
   std::vector<ValueSptr> values{ValueFactory::CreateIntValue(count)};
   record_ = std::make_unique<Record>(out_schema_.get(), values, INVALID_RID);

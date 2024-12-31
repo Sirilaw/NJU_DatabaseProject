@@ -58,7 +58,11 @@ void SortExecutor::Init()
   if (is_merge_sort_) {
     WSDB_STUDENT_TODO(l2, f1);
   }
-  WSDB_STUDENT_TODO(l2, t1);
+  // WSDB_STUDENT_TODO(l2, t1);
+  else {
+    SortBuffer();
+    Next();
+  }
 }
 
 void SortExecutor::Next()
@@ -66,7 +70,16 @@ void SortExecutor::Next()
   if (is_merge_sort_) {
     WSDB_STUDENT_TODO(L2, f1);
   }
-  WSDB_STUDENT_TODO(L2, t1);
+  // WSDB_STUDENT_TODO(L2, t1);
+  else {
+    if (buf_idx_ < sort_buffer_.size()) {
+      record_ = std::move(sort_buffer_[buf_idx_]);
+      buf_idx_++;
+    }
+    else {
+      record_ = nullptr;
+    }
+  }
 }
 
 auto SortExecutor::IsEnd() const -> bool
@@ -74,7 +87,10 @@ auto SortExecutor::IsEnd() const -> bool
   if (is_merge_sort_) {
     WSDB_STUDENT_TODO(L2, f1);
   }
-  WSDB_STUDENT_TODO(L2, t1);
+  // WSDB_STUDENT_TODO(L2, t1);
+  else {
+    return (buf_idx_ > sort_buffer_.size() || record_ == nullptr);
+  }
 }
 
 auto SortExecutor::Compare(const Record &lhs, const Record &rhs) const -> bool
@@ -93,7 +109,22 @@ auto SortExecutor::GetSortFileName(size_t file_group, size_t file_idx) const -> 
   return fmt::format("{}_{}_{}", merge_result_file_, file_group, file_idx);
 }
 
-void SortExecutor::SortBuffer() { WSDB_STUDENT_TODO(L2, t1); }
+void SortExecutor::SortBuffer() { 
+  // WSDB_STUDENT_TODO(L2, t1); 
+
+  // Sort the buffer using the Compare method
+  std::vector<RecordUptr> temp;
+  for (child_->Init(); !child_->IsEnd(); child_->Next()) {
+    temp.push_back(child_->GetRecord());
+  }
+  // Sort the buffer using the Compare method
+  std::sort(temp.begin(), temp.end(), [this](const RecordUptr &a, const RecordUptr& b) {
+    return Compare(*a, *b);
+  });
+  
+  sort_buffer_ = std::move(temp);
+  buf_idx_ = 0;  
+}
 
 void SortExecutor::DumpBufferToFile(size_t file_idx) { WSDB_STUDENT_TODO(L2, f1); }
 

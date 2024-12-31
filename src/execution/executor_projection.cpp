@@ -31,10 +31,27 @@ ProjectionExecutor::ProjectionExecutor(AbstractExecutorUptr child, RecordSchemaU
 
 // hint: record_ = std::make_unique<Record>(out_schema_.get(), *child_record);
 
-void ProjectionExecutor::Init() { WSDB_STUDENT_TODO(l2, t1); }
+void ProjectionExecutor::Init() { 
+  // WSDB_STUDENT_TODO(l2, t1); 
+  child_->Init();
+  if (!child_->IsEnd()) {
+    if (child_->GetRecord()) {
+        record_ = std::make_unique<Record>(out_schema_.get(), *(child_->GetRecord()));
+    }
+  }
+}
 
-void ProjectionExecutor::Next() { WSDB_STUDENT_TODO(l2, t1); }
+void ProjectionExecutor::Next() { 
+  // WSDB_STUDENT_TODO(l2, t1); 
+  child_->Next();
+  if (child_->GetRecord()) {
+      record_ = std::make_unique<Record>(out_schema_.get(), *(child_->GetRecord()));
+  }
+}
 
-auto ProjectionExecutor::IsEnd() const -> bool { WSDB_STUDENT_TODO(l2, t1); }
+auto ProjectionExecutor::IsEnd() const -> bool { 
+  // WSDB_STUDENT_TODO(l2, t1); 
+  return child_->IsEnd();  
+}
 
 }  // namespace wsdb
